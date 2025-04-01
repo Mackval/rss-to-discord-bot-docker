@@ -3,7 +3,7 @@ import time
 import os
 import json
 
-JSON_FEED_URL = 'https://www.inoreader.com/stream/user/1003782884/tag/all-articles/view/json'
+JSON_FEED_URL = 'https://www.inoreader.com/stream/user/1003782884/tag/Game%20News/view/json'
 DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/your-webhook'
 POSTED_LINKS_FILE = 'posted_links.txt'
 
