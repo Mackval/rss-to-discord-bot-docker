@@ -1,10 +1,10 @@
 import requests
-import xml.etree.ElementTree as ET
 import time
 import os
+import json
 
-RSS_FEED_URL = 'https://www.inoreader.com/stream/user/1003782884/tag/Game%20News'
-DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1356337247955325103/LiXBGdq9OMWT_W5GSSL1mS-LjK7nqP4KHZt0RQrk08w59fKhhJoVHVuOe532VAJMsKu5'
+JSON_FEED_URL = 'https://www.inoreader.com/stream/user/1003782884/tag/all-articles/view/json'
+DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/your-webhook'
 POSTED_LINKS_FILE = 'posted_links.txt'
 
 def get_posted_links():
@@ -18,25 +18,25 @@ def save_posted_link(link):
         f.write(link + '\n')
 
 def fetch_and_post():
-    response = requests.get(RSS_FEED_URL)
     try:
-        root = ET.fromstring(response.content)
-    except ET.ParseError as e:
-        print("❌ XML parsing error:", e)
+        response = requests.get(JSON_FEED_URL)
+        data = response.json()
+    except Exception as e:
+        print("❌ Failed to fetch or parse JSON:", e)
         return
 
-    items = list(root.iter('item'))
+    items = data.get("items", [])
     if not items:
-        print("⚠️ No items found in RSS feed.")
+        print("⚠️ No items found in JSON feed.")
         return
 
     posted_links = get_posted_links()
     new_items = []
 
-    # Loop through items in reverse (oldest to newest)
+    # Loop from oldest to newest
     for item in reversed(items):
-        title = item.find('title').text if item.find('title') is not None else 'No title'
-        link = item.find('link').text if item.find('link') is not None else 'No link'
+        title = item.get("title", "No title")
+        link = item.get("alternate", [{}])[0].get("href", "No link")
 
         if link not in posted_links:
             new_items.append((title, link))
@@ -56,7 +56,6 @@ def fetch_and_post():
             print(f"❌ Failed to post: {title}")
             print(post.text)
 
-# 🔁 Loop
 print("🔄 Bot is running. Checking every 60 seconds...")
 while True:
     fetch_and_post()
