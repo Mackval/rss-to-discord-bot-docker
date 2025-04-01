@@ -41,9 +41,11 @@ def fetch_and_post():
         alternates = item.get("alternate", [])
         link = alternates[0].get("href") if alternates else None
 
-        if not link:
-            print(f"⚠️ Skipping item (no valid link): {title}")
-            continue
+       if not link:
+    print(f"⚠️ Skipping item (no valid link): {title}")
+    print(json.dumps(item, indent=2))
+    continue
+
 
         print(f"🔗 Processing: {title} - {link}")
 
