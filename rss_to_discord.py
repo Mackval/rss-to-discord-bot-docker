@@ -34,16 +34,24 @@ def fetch_and_post():
     posted_links = get_posted_links()
     new_items = []
 
-    # Loop from oldest to newest
     for item in reversed(items):
         title = item.get("title", "No title")
-        link = item.get("alternate", [{}])[0].get("href", "No link")
+
+        # More reliable link extraction
+        alternates = item.get("alternate", [])
+        link = alternates[0].get("href") if alternates else None
+
+        if not link:
+            print(f"⚠️ Skipping item (no valid link): {title}")
+            continue
+
+        print(f"🔗 Processing: {title} - {link}")
 
         if link not in posted_links:
             new_items.append((title, link))
 
     if not new_items:
-        print("⏳ No new articles. Waiting...")
+        print("⏳ No new articles to post. Waiting...")
         return
 
     for title, link in new_items:
