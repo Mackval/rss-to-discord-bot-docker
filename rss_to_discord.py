@@ -37,15 +37,14 @@ def fetch_and_post():
     for item in reversed(items):
         title = item.get("title", "No title")
 
-        # More reliable link extraction
+        # Try to extract a link from "alternate"
         alternates = item.get("alternate", [])
         link = alternates[0].get("href") if alternates else None
 
-       if not link:
-    print(f"⚠️ Skipping item (no valid link): {title}")
-    print(json.dumps(item, indent=2))
-    continue
-
+        if not link:
+            print(f"⚠️ Skipping item (no valid link): {title}")
+            print(json.dumps(item, indent=2))  # Dump full item for debugging
+            continue
 
         print(f"🔗 Processing: {title} - {link}")
 
