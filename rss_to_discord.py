@@ -4,7 +4,7 @@ import os
 import json
 
 JSON_FEED_URL = 'https://www.inoreader.com/stream/user/1003782884/tag/Game%20News/view/json'
-DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/your-webhook'
+DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1356337247955325103/LiXBGdq9OMWT_W5GSSL1mS-LjK7nqP4KHZt0RQrk08w59fKhhJoVHVuOe532VAJMsKu5'
 POSTED_LINKS_FILE = 'posted_links.txt'
 
 def get_posted_links():
@@ -26,6 +26,7 @@ def fetch_and_post():
         return
 
     items = data.get("items", [])
+    print(f"🔎 Found {len(items)} items in the feed.")
     if not items:
         print("⚠️ No items found in JSON feed.")
         return
@@ -47,14 +48,15 @@ def fetch_and_post():
 
     for title, link in new_items:
         message = f"📰 **{title}**\n{link}"
-        post = requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+        response = requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
 
-        if post.status_code == 204:
+        if response.status_code == 204:
             print(f"✅ Posted: {title}")
             save_posted_link(link)
         else:
             print(f"❌ Failed to post: {title}")
-            print(post.text)
+            print(f"Status: {response.status_code}")
+            print(f"Response: {response.text}")
 
 print("🔄 Bot is running. Checking every 60 seconds...")
 while True:
